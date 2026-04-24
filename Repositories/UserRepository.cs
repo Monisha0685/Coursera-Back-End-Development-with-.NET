@@ -1,40 +1,28 @@
-using UserManagementAPI.Models;
-
-public interface IUserRepository
-{
-    IEnumerable<User> GetAll();
-    User? GetById(int id);
-    void Add(User user);
-    void Update(User user);
-    void Delete(int id);
-}
-
 public class UserRepository : IUserRepository
 {
-    private readonly List<User> _users = new();
+    private readonly Dictionary<int, User> _users = new();
+    private int _nextId = 1;
 
-    public IEnumerable<User> GetAll() => _users;
-    public User? GetById(int id) => _users.FirstOrDefault(u => u.Id == id);
+    public IEnumerable<User> GetAll() => _users.Values;
+
+    public User? GetById(int id) => _users.TryGetValue(id, out var user) ? user : null;
 
     public void Add(User user)
     {
-        user.Id = _users.Count > 0 ? _users.Max(u => u.Id) + 1 : 1;
-        _users.Add(user);
+        user.Id = _nextId++;
+        _users[user.Id] = user;
     }
 
     public void Update(User user)
     {
-        var existing = GetById(user.Id);
-        if (existing != null)
+        if (_users.ContainsKey(user.Id))
         {
-            existing.Name = user.Name;
-            existing.Email = user.Email;
+            _users[user.Id] = user;
         }
     }
 
     public void Delete(int id)
     {
-        var user = GetById(id);
-        if (user != null) _users.Remove(user);
+        _users.Remove(id);
     }
 }
