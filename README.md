@@ -15,12 +15,6 @@ A simple ASP.NET Core Web API for managing users (CRUD).
 - Helped fix logic errors (like assigning IDs)
 - Provided testing strategy with Postman
 
-## How to Run
-This project is structured for .NET 8.0. Clone the repo and run:
-```bash
-dotnet run
-
-
 ## Debugging with Copilot
 
 Copilot helped identify and fix several issues:
@@ -28,3 +22,9 @@ Copilot helped identify and fix several issues:
 - Recommended wrapping controller logic in try-catch blocks to prevent crashes.
 - Proposed using `Dictionary<int, User>` instead of `List<User>` for faster lookups.
 - Helped generate meaningful error messages for invalid requests.
+
+## How to Run
+This project is structured for .NET 8.0. Clone the repo and run:
+```bash
+dotnet run
+
