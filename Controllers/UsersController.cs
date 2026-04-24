@@ -1,51 +1,33 @@
-using Microsoft.AspNetCore.Mvc;
-using UserManagementAPI.Models;
-
-namespace UserManagementAPI.Controllers
+[HttpGet("{id}")]
+public IActionResult GetById(int id)
 {
-    [ApiController]
-    [Route("api/[controller]")]
-    public class UsersController : ControllerBase
+    try
     {
-        private readonly IUserRepository _repository;
+        var user = _repository.GetById(id);
+        if (user == null) return NotFound(new { message = "User not found" });
+        return Ok(user);
+    }
+    catch (Exception ex)
+    {
+        return StatusCode(500, new { message = "Internal server error", detail = ex.Message });
+    }
+}
 
-        public UsersController(IUserRepository repository)
-        {
-            _repository = repository;
-        }
+[HttpPost]
+public IActionResult Create(User user)
+{
+    if (!ModelState.IsValid)
+    {
+        return BadRequest(ModelState);
+    }
 
-        [HttpGet]
-        public IActionResult GetAll() => Ok(_repository.GetAll());
-
-        [HttpGet("{id}")]
-        public IActionResult GetById(int id)
-        {
-            var user = _repository.GetById(id);
-            return user == null ? NotFound() : Ok(user);
-        }
-
-        [HttpPost]
-        public IActionResult Create(User user)
-        {
-            _repository.Add(user);
-            return CreatedAtAction(nameof(GetById), new { id = user.Id }, user);
-        }
-
-        [HttpPut("{id}")]
-        public IActionResult Update(int id, User user)
-        {
-            if (_repository.GetById(id) == null) return NotFound();
-            user.Id = id;
-            _repository.Update(user);
-            return NoContent();
-        }
-
-        [HttpDelete("{id}")]
-        public IActionResult Delete(int id)
-        {
-            if (_repository.GetById(id) == null) return NotFound();
-            _repository.Delete(id);
-            return NoContent();
-        }
+    try
+    {
+        _repository.Add(user);
+        return CreatedAtAction(nameof(GetById), new { id = user.Id }, user);
+    }
+    catch (Exception ex)
+    {
+        return StatusCode(500, new { message = "Error creating user", detail = ex.Message });
     }
 }
